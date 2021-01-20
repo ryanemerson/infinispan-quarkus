@@ -17,7 +17,7 @@
     <name>Infinispan Quarkus :: BOM</name>
 
     <properties>
-      <elytron.version>1.13.2.Final</elytron.version>
+        <elytron.version>1.13.2.Final</elytron.version>
     </properties>
 
     <dependencyManagement>
@@ -26,7 +26,7 @@
             <dependency>
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-bom</artifactId>
-                <version>${project.version}</version>
+                <version>${infinispan.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
