@@ -1,4 +1,5 @@
 name: Infinispan Quarkus Release
+
 on:
   workflow_dispatch:
     inputs:
