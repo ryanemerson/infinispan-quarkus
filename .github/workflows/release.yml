@@ -1,4 +1,4 @@
-name: Infinispan Quarkus Release
+name: Release
 
 on:
   workflow_dispatch:
@@ -8,11 +8,11 @@ on:
         required: true
         default: "master"
       releaseVersion:
-        description: "Default version to use when preparing a release."
+        description: "Release version."
         required: true
         default: "X.Y.Z"
       developmentVersion:
-        description: "Default version to use for new local working copy."
+        description: "Next development version."
         required: true
         default: "X.Y.Z-SNAPSHOT"
 
@@ -50,7 +50,7 @@ jobs:
           mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }} -DprocessAllModules=true versions:commit
           git commit -a -m "Releasing ${{ github.event.inputs.releaseVersion }}"
           git tag ${{ github.event.inputs.releaseVersion }}
-          mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }} -DprocessAllModules=true versions:commit
+          mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }} -DprocessAllModules=true -DallowSnapshots=true versions:commit
           git commit -a -m "Next version ${{ github.event.inputs.developmentVersion }}"
 
       - name: Push changes
