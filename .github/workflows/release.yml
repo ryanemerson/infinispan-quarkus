@@ -47,12 +47,12 @@ jobs:
 
       - name: Tag release
         run: |
-          mvn -B -V versions:set-property -Dproperty=infinispan.version -DnewVersion=${{ github.event.inputs.releaseVersion }}
           mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }} -DprocessAllModules=true versions:commit
+          mvn -B -V versions:set-property -Dproperty=infinispan.version -DnewVersion=${{ github.event.inputs.releaseVersion }}
           git commit -a -m "Releasing ${{ github.event.inputs.releaseVersion }}"
           git tag ${{ github.event.inputs.releaseVersion }}
-          mvn -B -V versions:set-property -Dproperty=infinispan.version -DnewVersion=${{ github.event.inputs.developmentVersion }}
           mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }} -DprocessAllModules=true versions:commit
+          mvn -B -V versions:set-property -Dproperty=infinispan.version -DnewVersion=${{ github.event.inputs.developmentVersion }}
           git commit -a -m "Next version ${{ github.event.inputs.developmentVersion }}"
 
       - name: Push changes
