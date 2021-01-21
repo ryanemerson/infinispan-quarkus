@@ -2,7 +2,7 @@ name: cli-release-linux
 
 on:
   release:
-    types: [created] 
+    types: [published]
 
 jobs:
   build:
