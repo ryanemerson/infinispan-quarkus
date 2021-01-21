@@ -45,13 +45,23 @@ jobs:
           git config user.email "infinispan@infinispan.org"
           git config user.name "Infinispan"
 
+      - name: Checkout Infinispan SNAPSHOT
+        uses: actions/checkout@v2
+        with:
+          repository: infinispan/infinispan
+          path: infinispan
+
+      - name: Compile Infinispan SNAPSHOT
+        run: mvn -B -V install -s maven-settings.xml -DskipTests=true -am -pl server/tests
+        working-directory: infinispan
+
       - name: Tag release
         run: |
           mvn -B -V versions:set-property -Dproperty=infinispan.version -DnewVersion=${{ github.event.inputs.releaseVersion }} versions:commit
-          mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }} -DprocessDependencies=false -DprocessAllModules=true versions:commit
+          mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }} -DprocessAllModules=true versions:commit
           git commit -a -m "Releasing ${{ github.event.inputs.releaseVersion }}"
           git tag ${{ github.event.inputs.releaseVersion }}
-          mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }} -DprocessDependencies=false -DprocessAllModules=true versions:commit
+          mvn -B -V versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }} -DprocessAllModules=true versions:commit
           mvn -B -V versions:set-property -Dproperty=infinispan.version -DnewVersion=${{ github.event.inputs.developmentVersion }}
           git commit -a -m "Next version ${{ github.event.inputs.developmentVersion }}"
 
