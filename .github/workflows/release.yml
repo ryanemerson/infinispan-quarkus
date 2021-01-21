@@ -105,6 +105,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - if: ${{ matrix.os == 'windows-latest' }}
+      name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
     - name: Install graalvm
       uses: DeLaGuardo/setup-graalvm@3.1
       with:
@@ -119,7 +123,7 @@ jobs:
         ref: ${{ github.event.inputs.releaseVersion }}
 
     - name: Build native executable
-      run: ./${{ matrix.mvn_binary }} package -Dnative
+      run: ./${{ matrix.mvn_binary }} package -Dnative -am -pl cli
 
     - name: Upload CLI native executable
       id: upload-cli-native-executable
