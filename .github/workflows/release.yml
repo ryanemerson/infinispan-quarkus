@@ -84,8 +84,25 @@ jobs:
 
   build:
     needs: release
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        gu-binary: [gu, gu.cmd]
+        exclude:
+          - os: ubuntu-latest
+            gu-binary: gu.cmd
+          - os: macos-latest
+            gu-binary: gu.cmd
+          - os: windows-latest
+            gu-binary: gu
+        include:
+          - os: ubuntu-lastest
+            asset_name: linux-amd64
+          - os: macos-latest
+            asset_name: darwin-amd64
+          - os: windows-latest
+            asset_name: windows-amd64
     steps:
     - uses: actions/checkout@v2
 
@@ -95,7 +112,7 @@ jobs:
         graalvm-version: 20.3.0.java11
 
     - name: Install native-image
-      run: gu install native-image
+      run: ${{ matrix.gu-binary }} install native-image
 
     - name: Checkout Release Tag
       uses: actions/checkout@v2
@@ -113,5 +130,5 @@ jobs:
       with:
         upload_url:  ${{ needs.release.outputs.upload_url }}
         asset_path: ./cli/target/infinispan-quarkus-cli-${{ github.event.release.tag_name }}-runner
-        asset_name: infinispan-cli-${{ github.event.release.tag_name }}-linux
+        asset_name: infinispan-cli-${{ github.event.release.tag_name }}-${{ matrix.asset_name }}
         asset_content_type: application/octet-stream
