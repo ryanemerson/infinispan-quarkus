@@ -16,7 +16,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <infinispan.version>12.0.0-SNAPSHOT</infinispan.version>
         <quarkus.version>1.11.0.Final</quarkus.version>
     </properties>
 
