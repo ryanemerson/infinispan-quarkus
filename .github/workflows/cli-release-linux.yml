@@ -3,7 +3,6 @@ name: cli-release-linux
 on:
   release:
     types: [created] 
-  workflow_dispatch:
 
 jobs:
   build:
