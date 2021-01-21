@@ -20,6 +20,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
@@ -70,10 +73,43 @@ jobs:
           branch: ${{ github.ref }}
           tags: true
             
-      - name: Create Release
+      - id: release
+        name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.event.inputs.releaseVersion }}
           release_name: ${{ github.event.inputs.releaseVersion }}
+
+  build:
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install graalvm
+      uses: DeLaGuardo/setup-graalvm@3
+      with:
+        graalvm-version: 20.3.0.java11
+
+    - name: Install native-image
+      run: gu install native-image
+
+    - name: Set version
+      run: ./mvnw versions:set -DnewVersion="${{ github.event.release.tag_name }}"
+
+    - name: Build native executable
+      run: ./mvnw package -Dnative
+
+    - name: Upload CLI native executable
+      id: upload-cli-native-executable
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url:  ${{ needs.release.outputs.upload_url }}
+        asset_path: ./cli/target/infinispan-quarkus-cli-${{ github.event.release.tag_name }}-runner
+        asset_name: infinispan-cli-${{ github.event.release.tag_name }}-linux
+        asset_content_type: application/octet-stream
