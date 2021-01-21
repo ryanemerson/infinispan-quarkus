@@ -97,8 +97,10 @@ jobs:
     - name: Install native-image
       run: gu install native-image
 
-    - name: Set version
-      run: ./mvnw versions:set -DnewVersion="${{ github.event.release.tag_name }}"
+    - name: Checkout Release Tag
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.releaseVersion }}
 
     - name: Build native executable
       run: ./mvnw package -Dnative
