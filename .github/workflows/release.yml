@@ -124,10 +124,11 @@ jobs:
       run: |
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
         mvnw.cmd package -Dnative package -Dnative -am -pl cli
+      shell: cmd
 
     - if: ${{ matrix.os != 'windows-latest' }}
       name: Build native executable
-      run: mvnw package -Dnative -am -pl cli
+      run: ./mvnw package -Dnative -am -pl cli
 
     - name: Upload CLI native executable
       id: upload-cli-native-executable
