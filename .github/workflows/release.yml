@@ -108,6 +108,8 @@ jobs:
     - if: ${{ matrix.os == 'windows-latest' }}
       name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
+      with:
+        vs-version: 17.0
 
     - name: Install graalvm
       uses: DeLaGuardo/setup-graalvm@3.1
@@ -122,7 +124,12 @@ jobs:
       with:
         ref: ${{ github.event.inputs.releaseVersion }}
 
-    - name: Build native executable
+    - if: ${{ matrix.os == 'windows-latest' }}
+      name: Build native executable
+      run: cmd /c 'call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat" && ./${{ matrix.mvn_binary }} package -Dnative -am -pl cli'
+
+    - if: ${{ matrix.os != 'windows-latest' }}
+      name: Build native executable
       run: ./${{ matrix.mvn_binary }} package -Dnative -am -pl cli
 
     - name: Upload CLI native executable
