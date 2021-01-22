@@ -93,23 +93,18 @@ jobs:
           - os: ubuntu-latest
             asset_name: linux-amd64
             gu_binary: gu
-            mvn_binary: mvnw
           - os: macos-latest
             asset_name: darwin-amd64
             gu_binary: gu
-            mvn_binary: mvnw
           - os: windows-latest
             asset_name: windows-amd64
             gu_binary: gu.cmd
-            mvn_binary: mvnw.cmd
     steps:
     - uses: actions/checkout@v2
 
     - if: ${{ matrix.os == 'windows-latest' }}
       name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
-      with:
-        vs-version: 17.0
 
     - name: Install graalvm
       uses: DeLaGuardo/setup-graalvm@3.1
@@ -126,11 +121,13 @@ jobs:
 
     - if: ${{ matrix.os == 'windows-latest' }}
       name: Build native executable
-      run: cmd /c 'call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat" && ./${{ matrix.mvn_binary }} package -Dnative -am -pl cli'
+      run: |
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+        mvnw.cmd package -Dnative package -Dnative -am -pl cli
 
     - if: ${{ matrix.os != 'windows-latest' }}
       name: Build native executable
-      run: ./${{ matrix.mvn_binary }} package -Dnative -am -pl cli
+      run: mvnw package -Dnative -am -pl cli
 
     - name: Upload CLI native executable
       id: upload-cli-native-executable
